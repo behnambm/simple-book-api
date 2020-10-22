@@ -1,17 +1,19 @@
 from flask_restful import Resource, reqparse
 from models.user import User
-from util import email
+from util import email, string
 
 req_parser = reqparse.RequestParser()
 
 req_parser.add_argument(
     'first_name',
     required=True,
-    help='first name is required'
+    type=string,
+    help='first name is required, {error_msg}'
 )
 req_parser.add_argument(
     'last_name',
     required=True,
+    type=string,
     help='last name is required'
 )
 req_parser.add_argument(
@@ -22,6 +24,7 @@ req_parser.add_argument(
 req_parser.add_argument(
     'password',
     required=True,
+    type=string,
     help='Passwrod field is required for registration.'
 )
 
