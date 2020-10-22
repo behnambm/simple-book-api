@@ -20,3 +20,8 @@ class User(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
+
+    @classmethod
+    def get_user_by_email(cls, email):
+        user = cls.query.filter_by(email=email).first()
+        return user

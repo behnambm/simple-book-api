@@ -37,6 +37,10 @@ class UserLogin(Resource):
 class UserRegister(Resource):
     def post(self):
         data = req_parser.parse_args()
+        user = User.get_user_by_email(data['email'])
+        if user:
+            return {'message': '{!r} already exists'.format(data['email'])}, 400 # noqa
+
         new_user = User(
             first_name=data['first_name'],
             last_name=data['last_name'],
