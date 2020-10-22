@@ -1,19 +1,15 @@
 from flask import Flask
-from flask_restful import Api
 from models import db
 from config import Development
-from resources.auth import UserRegister
+from resources import api
 
-app = Flask(__name__)
-app.config.from_object(Development)
 
-api = Api(app)
+def create_app(config):
+    app = Flask(__name__)
+    app.config.from_object(config)
+    db.init_app(app)
+    api.init_app(app)
+    return app
 
-db.init_app(app)
 
-# add all resources to application
-api.add_resource(
-    UserRegister,
-    '/register',
-    '/register/'
-)
+app = create_app(Development)
