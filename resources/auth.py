@@ -5,15 +5,19 @@ from util import email
 req_parser = reqparse.RequestParser()
 
 req_parser.add_argument(
-    'username',
+    'first_name',
     required=True,
-    help='Username field is required for registration.'
+    help='first name is required'
+)
+req_parser.add_argument(
+    'last_name',
+    required=True,
+    help='last name is required'
 )
 req_parser.add_argument(
     'email',
     required=True,
-    type=email,
-    help='Email field is required for registration.'
+    type=email
 )
 req_parser.add_argument(
     'password',
@@ -31,9 +35,10 @@ class UserRegister(Resource):
     def post(self):
         data = req_parser.parse_args()
         new_user = User(
-            username=data['username'],
+            first_name=data['first_name'],
+            last_name=data['last_name'],
             email=data['email'],
             password=data['password']
         )
         new_user.save()
-        return {'message': 'Registration was successfull.'}
+        return {'message': 'registration was successfull.'}, 201
