@@ -1,7 +1,12 @@
 from flask_restful import Resource, reqparse
 from models.user import User
 from util import email, string
-from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_jwt_extended import (
+    create_access_token,
+    create_refresh_token,
+    fresh_jwt_required,
+    get_jwt_identity
+)
 
 
 req_parser = reqparse.RequestParser()
@@ -68,3 +73,25 @@ class UserRegister(Resource):
         )
         new_user.save()
         return {'message': 'registration was successfull.'}, 201
+
+
+class ChangePassword(Resource):
+    @fresh_jwt_required
+    def put(self):
+        parser = req_parser.copy()
+        parser.remove_argument('first_name')
+        parser.remove_argument('last_name')
+        data = parser.parse_args()
+
+        identity = get_jwt_identity()
+        user = User.get_user_by_id(identity)
+
+        if user:
+            if user.email == data['email']:
+                user.password = data['password']
+                user.save()
+                return {'message': 'your password successfully changed'}, 200
+
+            return {'message': 'invalid credentials'}, 401
+
+        return {'message': "couldn't find your account"}, 400

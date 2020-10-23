@@ -28,3 +28,7 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    @classmethod
+    def get_user_by_id(cls, _id):
+        return cls.query.filter_by(id=_id).first()
