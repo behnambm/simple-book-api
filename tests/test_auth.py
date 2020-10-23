@@ -5,32 +5,32 @@ from models.user import User
 
 
 def populate_database():
-        user_list = [
-            {
-                'first_name': 'Ben',
-                'last_name': 'blake',
-                'email': 'ben_blake@email.com'
-            },
-            {
-                'first_name': 'John',
-                'last_name': 'Smith',
-                'email': 'john_smith@email.com'
-            },
-            {
-                'first_name': 'hugo',
-                'last_name': 'alfred',
-                'email': 'hugo_alfred@email.com'
-            },
-        ]
-        for user in user_list:
-            'This is only for populating database.'
-            tmp_user = User(
-                first_name=user['first_name'],
-                last_name=user['last_name'],
-                email=user['email'],
-                password='123'
-            )
-            tmp_user.save()
+    user_list = [
+        {
+            'first_name': 'Ben',
+            'last_name': 'blake',
+            'email': 'ben_blake@email.com'
+        },
+        {
+            'first_name': 'John',
+            'last_name': 'Smith',
+            'email': 'john_smith@email.com'
+        },
+        {
+            'first_name': 'hugo',
+            'last_name': 'alfred',
+            'email': 'hugo_alfred@email.com'
+        },
+    ]
+    for user in user_list:
+        'This is only for populating database.'
+        tmp_user = User(
+            first_name=user['first_name'],
+            last_name=user['last_name'],
+            email=user['email'],
+            password='123'
+        )
+        tmp_user.save()
 
 
 class TestUserRegister(BaseTestCase):
@@ -97,6 +97,58 @@ class TestUserRegister(BaseTestCase):
         self.assertEqual(400, response.status_code)
         self.assertTrue('message' in data)
         self.assertTrue("'hugo_alfred@email.com' already exists" in data['message']) # noqa
+
+
+class TestUseLogin(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        populate_database()
+        self.user_data = {
+            'email': 'hugo_alfred@email.com',
+            'password': '123'
+        }
+
+    def test_user_login(self):
+
+        response = self.app.get(
+            '/login',
+            data=json.dumps(self.user_data),
+            content_type='application/json'
+        )
+        data = json.loads(response.data)
+        self.assertEqual(200, response.status_code)
+        self.assertTrue('access_token' in data)
+        self.assertTrue('refresh_token' in data)
+
+    def test_invalid_email(self):
+        user_data = self.user_data.copy()
+        user_data['email'] = 'unknown@mail.com'
+
+        response = self.app.get(
+            '/login/',
+            data=json.dumps(user_data),
+            content_type='application/json'
+        )
+        data = json.loads(response.data)
+
+        self.assertEqual(401, response.status_code)
+        self.assertTrue('message' in data)
+        self.assertTrue("couldn't find your account" in data['message'])
+
+    def test_wrond_password(self):
+        user_data = self.user_data.copy()
+        user_data['password'] = '12345'
+
+        response = self.app.get(
+            '/login/',
+            data=json.dumps(user_data),
+            content_type='application/json'
+        )
+        data = json.loads(response.data)
+
+        self.assertEqual(401, response.status_code)
+        self.assertTrue('message' in data)
+        self.assertTrue('invalid email or password' in data['message'])
 
 
 if __name__ == '__main__':
