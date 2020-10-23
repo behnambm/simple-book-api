@@ -151,5 +151,75 @@ class TestUseLogin(BaseTestCase):
         self.assertTrue('invalid email or password' in data['message'])
 
 
+class TestChangePassword(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        populate_database()
+
+        self.user_data = {
+            'email': 'hugo_alfred@email.com',
+            'password': '123'
+        }
+
+        login_response = self.app.get(
+            '/login',
+            data=json.dumps(self.user_data),
+            content_type='application/json'
+        )
+        self.access_token = json.loads(login_response.data)['access_token']
+
+        self.header = {
+            'Authorization': f'Bearer {self.access_token}'
+        }
+
+    def test_change_password(self):
+        user_data = self.user_data.copy()
+        user_data['password'] = 'new_password'
+
+        response = self.app.put(
+            '/change-password',
+            data=json.dumps(user_data),
+            content_type='application/json',
+            headers=self.header
+        )
+
+        data = json.loads(response.data)
+        self.assertEqual(200, response.status_code)
+        self.assertTrue('your password successfully changed' in data['message']) # noqa
+
+    def test_cannot_change_password_with_wrong_email(self):
+        user_data = self.user_data.copy()
+        user_data['email'] = 'some_wrong@email.com'
+
+        response = self.app.put(
+            '/change-password',
+            data=json.dumps(user_data),
+            content_type='application/json',
+            headers=self.header
+        )
+
+        data = json.loads(response.data)
+
+        self.assertEqual(401, response.status_code)
+        self.assertTrue('invalid credentials' in data['message'])
+
+    def test_cannot_change_password_with_invalid_jwt(self):
+        # invalid Authorization header
+        header = self.header.copy()
+        header['Authorization'] = 'Bearer sdf{}'.format(self.access_token)
+
+        response = self.app.put(
+            '/change-password',
+            data=json.dumps(self.user_data),
+            content_type='application/json',
+            headers=header
+        )
+
+        data = json.loads(response.data)
+
+        self.assertEqual(422, response.status_code)
+        self.assertTrue('Invalid header string' in data['msg'])
+
+
 if __name__ == '__main__':
     unittest.main()
