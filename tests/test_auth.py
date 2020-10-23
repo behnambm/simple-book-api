@@ -4,9 +4,7 @@ import json
 from models.user import User
 
 
-class TestUserRegister(BaseTestCase):
-    def setUp(self):
-        super(TestUserRegister, self).setUp()
+def populate_database():
         user_list = [
             {
                 'first_name': 'Ben',
@@ -34,6 +32,11 @@ class TestUserRegister(BaseTestCase):
             )
             tmp_user.save()
 
+
+class TestUserRegister(BaseTestCase):
+    def setUp(self):
+        super(TestUserRegister, self).setUp()
+        populate_database()
         self.user_data = {
             'first_name': 'user_first_name',
             'last_name': 'user_last_name',
