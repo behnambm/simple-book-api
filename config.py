@@ -8,6 +8,11 @@ class Config:
         'sqlite:///database.sqlite'
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    JWT_SECRET_KEY = (
+        os.environ.get('JWT_SECRET_KEY')
+        or
+        'some secret key to make JWT more secure'
+    )
 
 
 class Development(Config):
