@@ -1,6 +1,8 @@
 from flask_restful import Resource, reqparse
 from models.user import User
 from util import email, string
+from flask_jwt_extended import create_access_token, create_refresh_token
+
 
 req_parser = reqparse.RequestParser()
 
@@ -31,7 +33,24 @@ req_parser.add_argument(
 
 class UserLogin(Resource):
     def get(self):
-        pass
+        parser = req_parser.copy()
+        parser.remove_argument('first_name')
+        parser.remove_argument('last_name')
+        data = parser.parse_args()
+        user = User.get_user_by_email(data['email'])
+        if not user:
+            return {'message': 'couldn\'t find your account'}, 401
+
+        if not user.check_password(data['password']):
+            return {'message': 'invalid email or password'}, 401
+
+        access_token = create_access_token(identity=user.id, fresh=True)
+        refresh_token = create_refresh_token(identity=user.id)
+
+        return {
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        }, 200
 
 
 class UserRegister(Resource):
