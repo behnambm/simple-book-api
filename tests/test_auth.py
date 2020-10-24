@@ -221,5 +221,39 @@ class TestChangePassword(BaseTestCase):
         self.assertTrue('Invalid header string' in data['msg'])
 
 
+class TestUserInfo(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        populate_database()
+
+        self.user_data = {
+            'email': 'hugo_alfred@email.com',
+            'password': '123'
+        }
+
+        login_response = self.app.get(
+            '/login',
+            data=json.dumps(self.user_data),
+            content_type='application/json'
+        )
+        self.access_token = json.loads(login_response.data)['access_token']
+
+        self.header = {
+            'Authorization': f'Bearer {self.access_token}'
+        }
+
+    def test_get_user_info(self):
+        response = self.app.get(
+            '/user-info/',
+            headers=self.header
+        )
+        data = json.loads(response.data)
+
+        self.assertEqual(200, response.status_code)
+        self.assertTrue('info' in data)
+        self.assertTrue('email' in data['info'])
+        self.assertTrue('hugo_alfred@email.com' in data['info']['email'])
+
+
 if __name__ == '__main__':
     unittest.main()
