@@ -1,7 +1,13 @@
 ![Travis-CI](https://travis-ci.org/behnambm/simple-book-api.svg?branch=main)
-# simple-book-api
 
-## requirements: 
-- Flask-RestFul
-- Flask-SQLAlchemy
-- Flask-JWT-Extended
+## installation
+
+- `git clone https://github.com/behnambm/simple-book-api.git`
+- `cd simple-book-api`
+- `pip install -r requirements.txt`
+
+> Note: You may want to use `virtualenv` to prevent installing additional packages on your system.
+
+## run 
+
+- `python app.py`
