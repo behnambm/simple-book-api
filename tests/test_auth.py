@@ -1,42 +1,11 @@
 import unittest2 as unittest
 from tests.test_base import BaseTestCase
 import json
-from models.user import User
-
-
-def populate_database():
-    user_list = [
-        {
-            'first_name': 'Ben',
-            'last_name': 'blake',
-            'email': 'ben_blake@email.com'
-        },
-        {
-            'first_name': 'John',
-            'last_name': 'Smith',
-            'email': 'john_smith@email.com'
-        },
-        {
-            'first_name': 'hugo',
-            'last_name': 'alfred',
-            'email': 'hugo_alfred@email.com'
-        },
-    ]
-    for user in user_list:
-        'This is only for populating database.'
-        tmp_user = User(
-            first_name=user['first_name'],
-            last_name=user['last_name'],
-            email=user['email'],
-            password='123'
-        )
-        tmp_user.save()
 
 
 class TestUserRegister(BaseTestCase):
     def setUp(self):
         super(TestUserRegister, self).setUp()
-        populate_database()
         self.user_data = {
             'first_name': 'user_first_name',
             'last_name': 'user_last_name',
@@ -102,7 +71,6 @@ class TestUserRegister(BaseTestCase):
 class TestUseLogin(BaseTestCase):
     def setUp(self):
         super().setUp()
-        populate_database()
         self.user_data = {
             'email': 'hugo_alfred@email.com',
             'password': '123'
@@ -154,7 +122,6 @@ class TestUseLogin(BaseTestCase):
 class TestChangePassword(BaseTestCase):
     def setUp(self):
         super().setUp()
-        populate_database()
 
         self.user_data = {
             'email': 'hugo_alfred@email.com',
@@ -224,7 +191,6 @@ class TestChangePassword(BaseTestCase):
 class TestUserInfo(BaseTestCase):
     def setUp(self):
         super().setUp()
-        populate_database()
 
         self.user_data = {
             'email': 'hugo_alfred@email.com',
