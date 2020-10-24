@@ -1,11 +1,12 @@
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, fields, marshal_with
 from models.user import User
 from util import email, string
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     fresh_jwt_required,
-    get_jwt_identity
+    get_jwt_identity,
+    jwt_required
 )
 
 
@@ -95,3 +96,19 @@ class ChangePassword(Resource):
             return {'message': 'invalid credentials'}, 401
 
         return {'message': "couldn't find your account"}, 400
+
+
+user_output_fields = {
+    'first name': fields.String(attribute='first_name'),
+    'last name': fields.String(attribute='last_name'),
+    'email': fields.String
+}
+
+
+class UserInfo(Resource):
+    @jwt_required
+    @marshal_with(user_output_fields, envelope='info')
+    def get(self):
+        identity = get_jwt_identity()
+        user = User.get_user_by_id(identity)
+        return user

@@ -1,5 +1,10 @@
 from flask_restful import Api
-from resources.auth import UserRegister, UserLogin, ChangePassword
+from resources.auth import (
+    UserRegister,
+    UserLogin,
+    ChangePassword,
+    UserInfo
+)
 from flask_jwt_extended import JWTManager
 
 api = Api()
@@ -22,4 +27,10 @@ api.add_resource(
     ChangePassword,
     '/change-password',
     '/change-password/'
+)
+
+api.add_resource(
+    UserInfo,
+    '/user-info',
+    '/user-info/'
 )
