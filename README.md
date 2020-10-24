@@ -1,5 +1,5 @@
-![Travis-CI](https://travis-ci.org/behnambm/simple-book-api.svg?branch=main)
 
+[![Travis-CI](https://travis-ci.org/behnambm/simple-book-api.svg?branch=main)](https://travis-ci.org/behnambm/simple-book-api.svg?branch=main)
 ## installation
 
 - `git clone https://github.com/behnambm/simple-book-api.git`
