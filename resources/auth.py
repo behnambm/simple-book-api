@@ -111,4 +111,13 @@ class UserInfo(Resource):
     def get(self):
         identity = get_jwt_identity()
         user = User.get_user_by_id(identity)
-        return user
+class DeleteAccount(Resource):
+    @fresh_jwt_required
+    def delete(self):
+        identity = get_jwt_identity()
+        user = User.get_user_by_id(identity)
+        if not user:
+            return {'message': 'user not found'}, 404
+
+        user.delete()
+        return {'message': 'account successfully deleted'}, 202

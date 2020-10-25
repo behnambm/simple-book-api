@@ -3,7 +3,8 @@ from resources.auth import (
     UserRegister,
     UserLogin,
     ChangePassword,
-    UserInfo
+    UserInfo,
+    DeleteAccount
 )
 from flask_jwt_extended import JWTManager
 
@@ -33,4 +34,10 @@ api.add_resource(
     UserInfo,
     '/user-info',
     '/user-info/'
+)
+
+api.add_resource(
+    DeleteAccount,
+    '/delete-account',
+    '/delete-account/'
 )
