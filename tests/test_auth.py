@@ -221,5 +221,55 @@ class TestUserInfo(BaseTestCase):
         self.assertTrue('hugo_alfred@email.com' in data['info']['email'])
 
 
+class TestUserDelete(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+
+        self.user_data = {
+            'email': 'hugo_alfred@email.com',
+            'password': '123'
+        }
+        response = self.app.get(
+            '/login',
+            data=json.dumps(self.user_data),
+            content_type='application/json'
+        )
+        data = json.loads(response.data)
+
+        self.access_token = data['access_token']
+
+        self.header = {
+            'Authorization': f'Bearer {self.access_token}'
+        }
+
+    def test_delete_user(self):
+        response = self.app.delete(
+            '/delete-account',
+            headers=self.header
+        )
+
+        data = json.loads(response.data)
+
+        self.assertEqual(202, response.status_code)
+        self.assertTrue('account successfully deleted' in data['message'])
+
+    def test_that_we_get_error_when_a_user_is_already_deleted(self):
+        # first request to delete user
+        response = self.app.delete(
+            '/delete-account',
+            headers=self.header
+        )
+        # second request to delete user
+        response = self.app.delete(
+            '/delete-account',
+            headers=self.header
+        )
+
+        data = json.loads(response.data)
+
+        self.assertEqual(404, response.status_code)
+        self.assertTrue('user not found' in data['message'])
+
+
 if __name__ == '__main__':
     unittest.main()
