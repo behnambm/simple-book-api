@@ -3,6 +3,7 @@ import unittest2 as unittest
 from app import create_app
 from models import db
 from models.user import Role, UserRoles, User
+import json
 
 
 def populate_database():
@@ -57,6 +58,26 @@ class BaseTestCase(unittest.TestCase):
 
         app.app_context().push()
         self.app = app.test_client()
+
+    def login(self, data):
+        """
+        do login with flask test_client and return jwt tokens
+        """
+        response = self.app.get(
+            '/login',
+            data=json.dumps(data),
+            content_type='application/json'
+        )
+        data = json.loads(response.data)
+        if response.status_code == 200:
+            return data
+        raise Exception(f'error while logging in, status_code = {response.status_code}') # noqa
+
+    def get_authorization_header(self, access_token):
+        """
+        return a proper http header to be acceptable as a jwt
+        """
+        return {'Authorization': f'Bearer {access_token}'}
 
     def tearDown(self):
         db.drop_all()
