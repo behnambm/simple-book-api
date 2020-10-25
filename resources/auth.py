@@ -1,4 +1,4 @@
-from flask_restful import Resource, reqparse, fields, marshal_with
+from flask_restful import Resource, reqparse, fields, marshal
 from models.user import User
 from util import email, string
 from flask_jwt_extended import (
@@ -101,16 +101,23 @@ class ChangePassword(Resource):
 user_output_fields = {
     'first name': fields.String(attribute='first_name'),
     'last name': fields.String(attribute='last_name'),
-    'email': fields.String
+    'email': fields.String,
+    'roles': fields.List(fields.String(attribute='name'))
 }
 
 
 class UserInfo(Resource):
     @jwt_required
-    @marshal_with(user_output_fields, envelope='info')
     def get(self):
         identity = get_jwt_identity()
         user = User.get_user_by_id(identity)
+        print(user)
+        if not user:
+            return {'message': 'user not found'}, 404
+
+        return marshal(user, user_output_fields, envelope='info')
+
+
 class DeleteAccount(Resource):
     @fresh_jwt_required
     def delete(self):
