@@ -28,6 +28,9 @@ class Author(Resource):
         user = User.get_user_by_email(data['email'])
         # user.roles will give us a list of Role objects
         # so we need to get names of those objects
+        if not user:
+            return {'message': 'user not found'}, 404
+
         user_roles = [role.name for role in user.roles]
         if 'author' in user_roles:
             return {'message': "this account already has 'Author' privilege"}
