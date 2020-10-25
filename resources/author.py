@@ -33,7 +33,7 @@ class Author(Resource):
 
         user_roles = [role.name for role in user.roles]
         if 'author' in user_roles:
-            return {'message': "this account already has 'Author' privilege"}
+            return {'message': "this account already has 'Author' privilege"}, 409
 
         if 'user' in user_roles or 'admin' in user_roles:
             user.add_role('author')
