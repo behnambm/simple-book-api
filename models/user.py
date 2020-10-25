@@ -38,10 +38,22 @@ class User(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def add_role(self, role_name=None):
+        if role_name:
+            role = Role.get_role_by_name(role_name)
+            if role:
+                _user_role = UserRoles(user_id=self.id, role_id=role.id)
+                db.session.add(_user_role)
+                db.session.commit()
+
 
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(), nullable=False, unique=True)
+
+    @classmethod
+    def get_role_by_name(cls, name=None):
+        return cls.query.filter_by(name=name).first()
 
 
 # association table for user roles
