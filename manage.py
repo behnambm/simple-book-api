@@ -1,6 +1,6 @@
 from flask_script import Manager
 from models import db
-from models.user import User
+from models.user import User, Role, UserRoles
 from app import app
 from tqdm import tqdm
 
@@ -28,6 +28,11 @@ def init_db():
             'email': 'hugo_alfred@email.com'
         },
     ]
+    db.session.add(Role(name='user'))
+    db.session.add(Role(name='author'))
+    db.session.add(Role(name='admin'))
+    db.session.commit()
+
     for user in tqdm(user_list):
         'This is only for populating database.'
         tmp_user = User(
@@ -37,6 +42,11 @@ def init_db():
             password='123'
         )
         tmp_user.save()
+
+    db.session.add(UserRoles(user_id=1, role_id=1))
+    db.session.add(UserRoles(user_id=2, role_id=2))
+    db.session.add(UserRoles(user_id=3, role_id=3))
+    db.session.commit()
 
     print('Database successfully initialized.')
 
