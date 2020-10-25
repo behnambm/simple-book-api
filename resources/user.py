@@ -111,7 +111,6 @@ class UserInfo(Resource):
     def get(self):
         identity = get_jwt_identity()
         user = User.get_user_by_id(identity)
-        print(user)
         if not user:
             return {'message': 'user not found'}, 404
 
