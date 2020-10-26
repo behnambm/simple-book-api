@@ -2,4 +2,4 @@
 
 exclude= .git, venv
 
-ignore = E501, W504, W503
+ignore = E501, W504, W503, E303
