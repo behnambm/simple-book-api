@@ -61,23 +61,28 @@ class BaseTestCase(unittest.TestCase):
 
     def login(self, data):
         """
-        do login with flask test_client and return jwt tokens
+        do login with flask test_client and return response object
         """
         response = self.app.get(
             '/login',
             data=json.dumps(data),
             content_type='application/json'
         )
-        data = json.loads(response.data)
-        if response.status_code == 200:
-            return data
-        raise Exception(f'error while logging in, status_code = {response.status_code}') # noqa
 
-    def get_authorization_header(self, access_token):
+        return response
+
+    def get_authorization_header(self, response):
         """
         return a proper http header to be acceptable as a jwt
         """
-        return {'Authorization': f'Bearer {access_token}'}
+        data = json.loads(response.data)
+        return {'Authorization': f"Bearer {data['access_token']}"}
+
+    def get_access_token(self, response):
+        data = json.loads(response.data)
+
+        return data['access_token']
+
 
     def tearDown(self):
         db.drop_all()

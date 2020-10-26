@@ -77,13 +77,11 @@ class TestUseLogin(BaseTestCase):
         }
 
     def test_user_login(self):
+        response = super().login(data=self.user_data)
 
-        response = self.app.get(
-            '/login',
-            data=json.dumps(self.user_data),
-            content_type='application/json'
-        )
         data = json.loads(response.data)
+
+
         self.assertEqual(200, response.status_code)
         self.assertTrue('access_token' in data)
         self.assertTrue('refresh_token' in data)
@@ -92,11 +90,8 @@ class TestUseLogin(BaseTestCase):
         user_data = self.user_data.copy()
         user_data['email'] = 'unknown@mail.com'
 
-        response = self.app.get(
-            '/login/',
-            data=json.dumps(user_data),
-            content_type='application/json'
-        )
+        response = super().login(data=user_data)
+
         data = json.loads(response.data)
 
         self.assertEqual(401, response.status_code)
@@ -107,11 +102,8 @@ class TestUseLogin(BaseTestCase):
         user_data = self.user_data.copy()
         user_data['password'] = '12345'
 
-        response = self.app.get(
-            '/login/',
-            data=json.dumps(user_data),
-            content_type='application/json'
-        )
+        response = super().login(data=user_data)
+
         data = json.loads(response.data)
 
         self.assertEqual(401, response.status_code)
@@ -128,16 +120,11 @@ class TestChangePassword(BaseTestCase):
             'password': '123'
         }
 
-        login_response = self.app.get(
-            '/login',
-            data=json.dumps(self.user_data),
-            content_type='application/json'
-        )
-        self.access_token = json.loads(login_response.data)['access_token']
+        login_response = super().login(data=self.user_data)
 
-        self.header = {
-            'Authorization': f'Bearer {self.access_token}'
-        }
+        self.access_token = super().get_access_token(login_response)
+
+        self.header = super().get_authorization_header(login_response)
 
     def test_change_password(self):
         user_data = self.user_data.copy()
@@ -197,16 +184,10 @@ class TestUserInfo(BaseTestCase):
             'password': '123'
         }
 
-        login_response = self.app.get(
-            '/login',
-            data=json.dumps(self.user_data),
-            content_type='application/json'
-        )
-        self.access_token = json.loads(login_response.data)['access_token']
+        login_response = super().login(data=self.user_data)
 
-        self.header = {
-            'Authorization': f'Bearer {self.access_token}'
-        }
+
+        self.header = super().get_authorization_header(response=login_response)
 
     def test_get_user_info(self):
         response = self.app.get(
@@ -229,18 +210,9 @@ class TestUserDelete(BaseTestCase):
             'email': 'hugo_alfred@email.com',
             'password': '123'
         }
-        response = self.app.get(
-            '/login',
-            data=json.dumps(self.user_data),
-            content_type='application/json'
-        )
-        data = json.loads(response.data)
+        response = super().login(data=self.user_data)
 
-        self.access_token = data['access_token']
-
-        self.header = {
-            'Authorization': f'Bearer {self.access_token}'
-        }
+        self.header = super().get_authorization_header(response)
 
     def test_delete_user(self):
         response = self.app.delete(
@@ -269,7 +241,3 @@ class TestUserDelete(BaseTestCase):
 
         self.assertEqual(404, response.status_code)
         self.assertTrue('user not found' in data['message'])
-
-
-if __name__ == '__main__':
-    unittest.main()

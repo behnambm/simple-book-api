@@ -35,45 +35,52 @@ class TestGrantingUserRoleToAuthor(BaseTestCase):
         return response
 
     def test_granting_user_role_works_fine(self):
-        # ================== login ===================
         # get jwt token with this function
-        tokens = super().login(data=self.admin_user_data)
+        response = super().login(data=self.admin_user_data)
         # get a proper http header
-        header = super().get_authorization_header(access_token=tokens['access_token'])
+        header = super().get_authorization_header(response=response)
 
-        # ================== grant role ==============
+
         response = self.grant_role_to_author('ben_blake@email.com', header=header)
 
-        # ----------- unittests ----------------------
+
         data = json.loads(response.data)
+
 
         self.assertEqual(200, response.status_code)
         self.assertTrue('role added to the account' in data['message'])
 
+
     def test_cannot_grant_role_with_none_admin_user(self):
         # in here we try to login with a none ADMIN user
-        tokens = super().login(data=self.none_admin_user_data)
-        header = super().get_authorization_header(access_token=tokens['access_token'])
+        response = super().login(data=self.none_admin_user_data)
+        header = super().get_authorization_header(response)
+
 
         response = self.grant_role_to_author('ben_blake@email.com', header=header)
 
+
         data = json.loads(response.data)
+
 
         self.assertEqual(401, response.status_code)
         self.assertTrue('only admins allowed' in data['message'])
 
-    def test_cannot_grant_a_user_role_twice(self):
-        tokens = super().login(self.admin_user_data)
-        header = super().get_authorization_header(access_token=tokens['access_token'])
 
-        # -------------------- unittests ---------
+    def test_cannot_grant_a_user_role_twice(self):
+        response = super().login(self.admin_user_data)
+        header = super().get_authorization_header(response)
+
+
         # first try to grant role
         self.grant_role_to_author('ben_blake@email.com', header=header)
 
         # second try to grant role wheich we expect to fail
         response = self.grant_role_to_author('ben_blake@email.com', header=header)
 
+
         data = json.loads(response.data)
+
 
         self.assertEqual(409, response.status_code)
         self.assertTrue("this account already has 'Author' privilege" in data['message'])
