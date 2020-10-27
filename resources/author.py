@@ -1,6 +1,7 @@
 from flask_restful import Resource, reqparse, fields, marshal
-from util import email, admin_required
-from models.user import User
+from utils.common import email
+from utils.user import role_required
+from models import User
 from flask_jwt_extended import fresh_jwt_required
 
 
@@ -22,7 +23,7 @@ user_output_fields = {
 
 class Author(Resource):
     @fresh_jwt_required
-    @admin_required
+    @role_required('admin')
     def post(self):
         data = req_parser.parse_args()
         user = User.get_user_by_email(data['email'])
