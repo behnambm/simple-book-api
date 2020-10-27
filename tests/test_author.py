@@ -62,9 +62,8 @@ class TestGrantingUserRoleToAuthor(BaseTestCase):
 
         data = json.loads(response.data)
 
-
         self.assertEqual(401, response.status_code)
-        self.assertTrue('only admins allowed' in data['message'])
+        self.assertTrue("only 'admin' roles allowed" in data['message'])
 
 
     def test_cannot_grant_a_user_role_twice(self):
