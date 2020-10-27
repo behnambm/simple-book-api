@@ -1,6 +1,4 @@
 from email_validator import validate_email
-from functools import wraps
-from flask_jwt_extended import get_jwt_claims
 
 
 def email(_email):
@@ -16,13 +14,3 @@ def string(value):
         return value
 
     raise 'Not a valid string'
-
-
-def admin_required(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if not get_jwt_claims().get('is_admin'):
-            return {'message': 'only admins allowed'}, 401
-
-        return func(*args, **kwargs)
-    return wrapper

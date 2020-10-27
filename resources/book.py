@@ -1,7 +1,8 @@
 from flask_restful import Resource, marshal, fields
 from flask_jwt_extended import get_jwt_identity, fresh_jwt_required, jwt_optional
-from models.user import Book as BookModel
-from util import book_req_parser, role_required
+from models import Book as BookModel
+from utils.book import book_req_parser
+from utils.user import role_required
 from resources.user import user_output_fields
 
 

@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse, fields, marshal
-from models.user import User
-from util import email, string
+from models import User
+from utils.common import email, string
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -99,6 +99,7 @@ class ChangePassword(Resource):
 
 
 user_output_fields = {
+    'id': fields.Integer,
     'first name': fields.String(attribute='first_name'),
     'last name': fields.String(attribute='last_name'),
     'email': fields.String,

@@ -1,6 +1,6 @@
 from flask_script import Manager
 from models import db
-from models.user import User, Role, UserRoles
+from models import User, Role, UserRoles
 from app import app
 from tqdm import tqdm
 

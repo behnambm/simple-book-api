@@ -8,7 +8,7 @@ from resources.user import (
 )
 from flask_jwt_extended import JWTManager
 from resources.author import Author
-from models.user import User
+from models import User
 from resources.book import Book
 
 
