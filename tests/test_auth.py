@@ -178,12 +178,7 @@ class TestUserInfo(BaseTestCase):
     def setUp(self):
         super().setUp()
 
-        self.user_data = {
-            'email': 'hugo_alfred@email.com',
-            'password': '123'
-        }
-
-        login_response = super().login(data=self.user_data)
+        login_response = super().login(data=self.admin_user_data)
 
 
         self.header = super().get_authorization_header(response=login_response)
@@ -199,6 +194,7 @@ class TestUserInfo(BaseTestCase):
         self.assertTrue('info' in data)
         self.assertTrue('email' in data['info'])
         self.assertTrue('hugo_alfred@email.com' in data['info']['email'])
+        self.assertTrue('admin' in data['info']['roles'])
 
 
 class TestUserDelete(BaseTestCase):
