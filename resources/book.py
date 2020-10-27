@@ -48,7 +48,7 @@ class Book(Resource):
         )
         book.save()
 
-        return data
+        return data, 201
 
     def put(self):
         pass
