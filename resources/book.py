@@ -1,20 +1,8 @@
 from flask_restful import Resource, marshal, fields
 from flask_jwt_extended import get_jwt_identity, fresh_jwt_required, jwt_optional
 from models import Book as BookModel
-from utils.book import book_req_parser
-from utils.user import role_required
-from resources.user import user_output_fields
-
-
-user_output_fields.pop('roles')
-
-book_output_fields = {
-    'id': fields.Integer,
-    'name': fields.String,
-    'publish_date': fields.String,
-    'price': fields.Float
-}
-
+from utils.book import book_req_parser, BOOK_OUTPUT_FIELDS
+from utils.user import role_required, USER_OUTPUT_FIELDS
 
 
 class Book(Resource):
@@ -25,15 +13,17 @@ class Book(Resource):
         if not book:
             return {'message': 'book not found'}, 404
 
-        user_output_fields_ = user_output_fields.copy()
-        book_output_fields_ = book_output_fields.copy()
+        user_outputs = USER_OUTPUT_FIELDS.copy()
+        user_outputs.pop('roles')  # to not show roles in this endpoint
+
+        book_outputs = BOOK_OUTPUT_FIELDS.copy()
 
         if not get_jwt_identity():
-            user_output_fields_.pop('email')
+            user_outputs.pop('email')
 
-        book_output_fields_['author'] = fields.Nested(user_output_fields_)
+        book_outputs['author'] = fields.Nested(user_outputs)
 
-        return marshal(book, book_output_fields_)
+        return marshal(book, book_outputs)
 
     @fresh_jwt_required
     @role_required('author')
@@ -48,10 +38,43 @@ class Book(Resource):
         )
         book.save()
 
-        return data, 201
+        output_fields = BOOK_OUTPUT_FIELDS.copy()
+        output_fields['message'] = fields.FormattedString('book successfully created')
 
-    def put(self):
-        pass
+        return marshal(book, BOOK_OUTPUT_FIELDS), 201
 
-    def delete(self):
-        pass
+
+    @fresh_jwt_required
+    def put(self, book_id):
+        data = book_req_parser.parse_args()
+
+        book = BookModel.get_book_by_id(book_id)
+
+        if not book:
+            return {'message': 'book not found'}, 404
+
+        book.name = data.get('name')
+        book.publish_date = data.get('publish_date')
+        book.price = data.get('price')
+
+        book.save()
+
+        output_fields = BOOK_OUTPUT_FIELDS.copy()
+        output_fields['message'] = fields.FormattedString('book has been updated')
+
+        return marshal(book, BOOK_OUTPUT_FIELDS), 200
+
+
+    @fresh_jwt_required
+    def delete(self, book_id):
+        book = BookModel.get_book_by_id(book_id)
+
+        if not book:
+            return {'message': 'book not found'}, 404
+
+        if book.author.id != get_jwt_identity():
+            return {'message': 'you are not allowed to delete this book'}, 401
+
+        book.delete()
+
+        return {'message': 'book successfully deleted'}, 202

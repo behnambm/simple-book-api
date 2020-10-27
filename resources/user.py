@@ -1,4 +1,4 @@
-from flask_restful import Resource, reqparse, fields, marshal
+from flask_restful import Resource, reqparse, marshal
 from models import User
 from utils.common import email, string
 from flask_jwt_extended import (
@@ -8,6 +8,7 @@ from flask_jwt_extended import (
     get_jwt_identity,
     jwt_required
 )
+from utils.user import USER_OUTPUT_FIELDS
 
 
 req_parser = reqparse.RequestParser()
@@ -98,15 +99,6 @@ class ChangePassword(Resource):
         return {'message': "couldn't find your account"}, 400
 
 
-user_output_fields = {
-    'id': fields.Integer,
-    'first name': fields.String(attribute='first_name'),
-    'last name': fields.String(attribute='last_name'),
-    'email': fields.String,
-    'roles': fields.List(fields.String(attribute='name'))
-}
-
-
 class UserInfo(Resource):
     @jwt_required
     def get(self):
@@ -114,8 +106,7 @@ class UserInfo(Resource):
         user = User.get_user_by_id(identity)
         if not user:
             return {'message': 'user not found'}, 404
-
-        return marshal(user, user_output_fields, envelope='info')
+        return marshal(user, USER_OUTPUT_FIELDS, envelope='info')
 
 
 class DeleteAccount(Resource):
