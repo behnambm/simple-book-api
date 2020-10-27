@@ -69,6 +69,24 @@ class BaseTestCase(unittest.TestCase):
         app.app_context().push()
         self.app = app.test_client()
 
+        # declare different types of users to be used in further tests
+        fake_users_default_password = '123'
+
+        self.regular_user_data = {
+            'email': 'ben_blake@email.com',
+            'password': fake_users_default_password
+        }
+
+        self.author_user_data = {
+            'email': 'john_smith@email.com',
+            'password': fake_users_default_password
+        }
+
+        self.admin_user_data = {
+            'email': 'hugo_alfred@email.com',
+            'password': fake_users_default_password
+        }
+
     def login(self, data):
         """
         do login with flask test_client and return response object
