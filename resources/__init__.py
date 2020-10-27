@@ -9,6 +9,7 @@ from resources.user import (
 from flask_jwt_extended import JWTManager
 from resources.author import Author
 from models.user import User
+from resources.book import Book
 
 
 api = Api()
@@ -20,8 +21,7 @@ def add_claims_to_access_token(identity):
     user = User.get_user_by_id(identity)
     if user:
         user_roles = [role.name for role in user.roles]
-        if 'admin' in user_roles:
-            return {'is_admin': True}
+        return {'role': user_roles}
     return None
 
 
@@ -62,4 +62,12 @@ api.add_resource(
     '/author/<int:user_id>/',
     '/author',
     '/author/'
+)
+
+api.add_resource(
+    Book,
+    '/book/<int:book_id>',
+    '/book/<int:book_id>/',
+    '/book',
+    '/book/'
 )
