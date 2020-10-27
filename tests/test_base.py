@@ -2,7 +2,7 @@ from config import Testing
 import unittest2 as unittest
 from app import create_app
 from models import db
-from models import Role, UserRoles, User
+from models import Role, UserRoles, User, Book
 import json
 
 
@@ -37,7 +37,17 @@ def populate_database():
     db.session.add(Role(name='user'))
     db.session.add(Role(name='author'))
     db.session.add(Role(name='admin'))
-    db.session.commit()
+
+    # Populate database with fake Books
+    for i in range(1, 4):
+        db.session.add(
+            Book(
+                name=f'WonderLand {i}',
+                publish_date=f'2020-02-2{i}',
+                price=23.50,
+                author_id=2
+            )
+        )
 
     db.session.add(UserRoles(user_id=1, role_id=1))
     db.session.add(UserRoles(user_id=2, role_id=2))
