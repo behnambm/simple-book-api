@@ -1,6 +1,6 @@
 from flask_script import Manager
 from models import db
-from models import User, Role, UserRoles
+from models import User, Role, UserRoles, Book
 from app import app
 from tqdm import tqdm
 
@@ -42,6 +42,17 @@ def init_db():
             password='123'
         )
         tmp_user.save()
+
+    # Populate database with fake Books
+    for i in range(1, 4):
+        db.session.add(
+            Book(
+                name=f'Wonder Land {i}',
+                publish_date=f'2020-02-2{i}',
+                price=23.50,
+                author_id=2
+            )
+        )
 
     db.session.add(UserRoles(user_id=1, role_id=1))
     db.session.add(UserRoles(user_id=2, role_id=2))
