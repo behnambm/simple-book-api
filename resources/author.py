@@ -26,16 +26,32 @@ class Author(Resource):
     def post(self):
         data = req_parser.parse_args()
         user = User.get_user_by_email(data['email'])
-        # user.roles will give us a list of Role objects
-        # so we need to get names of those objects
+
         if not user:
             return {'message': 'user not found'}, 404
 
-        user_roles = [role.name for role in user.roles]
-        if 'author' in user_roles:
+        if user.has_role('author'):
             return {'message': "this account already has 'Author' privilege"}, 409
 
-        if 'user' in user_roles or 'admin' in user_roles:
+        if not user.has_role('author'):
             user.add_role('author')
-            user_output_fields['message'] = fields.FormattedString('role added to the account') # noqa
+            output_fields = user_output_fields.copy()
+            output_fields['message'] = fields.FormattedString('role added to the account') # noqa
+            return marshal(user, output_fields)
+
+    def get(self, user_id):
+        user = User.get_user_by_id(user_id)
+        if not user:
+            return {'message': 'user not found'}, 404
+
+        if user.has_role('author'):
             return marshal(user, user_output_fields)
+
+        return {'message': 'author not found'}, 404
+
+
+    def put(self, user_id):
+        pass
+
+    def delete(self, user_id):
+        pass

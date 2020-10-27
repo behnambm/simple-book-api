@@ -46,6 +46,10 @@ class User(db.Model):
                 db.session.add(_user_role)
                 db.session.commit()
 
+    def has_role(self, name):
+        roles = [role.name for role in self.roles]
+        return name in roles
+
 
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)

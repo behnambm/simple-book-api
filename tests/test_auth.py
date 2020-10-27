@@ -1,4 +1,3 @@
-import unittest2 as unittest
 from tests.test_base import BaseTestCase
 import json
 
