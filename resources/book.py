@@ -45,6 +45,7 @@ class Book(Resource):
 
 
     @fresh_jwt_required
+    @role_required('author')
     def put(self, book_id):
         data = book_req_parser.parse_args()
 
