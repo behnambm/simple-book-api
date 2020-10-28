@@ -124,3 +124,19 @@ class Book(BaseTestCase):
 
         self.assertEqual(401, response.status_code)
         self.assertTrue('you are not allowed to delete this book' in data.get('message'))
+
+    def test_cannot_update_other_authors_books(self):
+        response = self.login(self.regular_user_data)
+        header = self.get_authorization_header(response)
+
+        response = self.app.put(
+            '/book/3/',
+            data=json.dumps(self.book_data),
+            content_type='application/json',
+            headers=header
+        )
+
+        data = json.loads(response.data)
+
+        self.assertEqual(401, response.status_code)
+        self.assertTrue('you are not allowed to update this book' in data.get('message'))
