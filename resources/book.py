@@ -53,6 +53,9 @@ class Book(Resource):
         if not book:
             return {'message': 'book not found'}, 404
 
+        if book.author.id != get_jwt_identity():
+            return {'message': 'you are not allowed to update this book'}, 401
+
         book.name = data.get('name')
         book.publish_date = data.get('publish_date')
         book.price = data.get('price')
