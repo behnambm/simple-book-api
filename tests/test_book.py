@@ -78,3 +78,49 @@ class Book(BaseTestCase):
 
         self.assertEqual(401, response.status_code)
         self.assertTrue("only 'author' roles allowed" in data['message'])
+
+    def test_update_book(self):
+        response = self.login(self.author_user_data)
+        header = self.get_authorization_header(response)
+
+        book_data = self.book_data.copy()
+        book_data['price'] = 68
+
+        response = self.app.put(
+            '/book/3/',
+            data=json.dumps(book_data),
+            content_type='application/json',
+            headers=header
+        )
+        data = json.loads(response.data)
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(68, data.get('price'))
+
+    def test_delete_book(self):
+        response = self.login(self.author_user_data)
+        header = self.get_authorization_header(response)
+
+        response = self.app.delete(
+            '/book/3/',
+            headers=header
+        )
+
+        data = json.loads(response.data)
+
+        self.assertEqual(202, response.status_code)
+        self.assertTrue('book successfully deleted' in data.get('message'))
+
+    def test_cannot_delete_book_with_none_author_user(self):
+        response = self.login(self.regular_user_data)
+        header = self.get_authorization_header(response)
+
+        response = self.app.delete(
+            '/book/3/',
+            headers=header
+        )
+
+        data = json.loads(response.data)
+
+        self.assertEqual(401, response.status_code)
+        self.assertTrue('you are not allowed to delete this book' in data.get('message'))
