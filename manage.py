@@ -2,7 +2,7 @@ from flask_script import Manager
 from models import db
 from models import User, Role, UserRoles, Book
 from app import app
-from tqdm import tqdm
+from tqdm import tqdm, trange
 
 manager = Manager(app)
 
@@ -44,7 +44,7 @@ def init_db():
         tmp_user.save()
 
     # Populate database with fake Books
-    for i in range(1, 4):
+    for i in trange(1, 4):
         db.session.add(
             Book(
                 name=f'Wonder Land {i}',
