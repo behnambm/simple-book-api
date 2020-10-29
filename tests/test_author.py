@@ -83,3 +83,38 @@ class TestGrantingUserRoleToAuthor(BaseTestCase):
 
         self.assertEqual(409, response.status_code)
         self.assertTrue("this account already has 'Author' privilege" in data['message'])
+
+    def test_user_update_works_fine(self):
+        response = self.login(self.author_user_data)
+        header = self.get_authorization_header(response)
+
+        user_data = {
+            'first_name': 'A new first name'
+        }
+
+        response = self.app.put(
+            '/author',
+            data=json.dumps(user_data),
+            content_type='application/json',
+            headers=header
+        )
+
+        data = json.loads(response.data)
+
+        self.assertEqual(200, response.status_code)
+        print(data)
+        self.assertTrue('A new first name' in data.get('first name'))
+
+    def test_author_not_found_in_updating_author(self):
+        response = self.login(self.regular_user_data)
+        header = self.get_authorization_header(response)
+
+        response = self.app.put(
+            '/author/',
+            headers=header
+        )
+
+        data = json.loads(response.data)
+
+        self.assertEqual(400, response.status_code)
+        self.assertTrue('this user is not an author' in data.get('message'))
