@@ -67,9 +67,9 @@ class Author(Resource):
         if not user.has_role('author'):
             return {'message': 'this user is not an author'}, 400
 
-        user.first_name = req_parser.get('first_name', user.first_name)
-        user.last_name = req_parser.get('last_name', user.last_name)
-        user.email = req_parser.get('email', user.email)
+        user.first_name = req_parser.get('first_name') or user.first_name
+        user.last_name = req_parser.get('last_name') or user.last_name
+        user.email = req_parser.get('email') or user.email
 
         user.save()
         return marshal(user, USER_OUTPUT_FIELDS)
