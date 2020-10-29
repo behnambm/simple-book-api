@@ -11,7 +11,7 @@ class User(db.Model):
     last_name = db.Column(db.String(), nullable=False)
     password_hash = db.Column(db.String(), nullable=False)
     roles = db.relationship('Role', secondary='user_roles')
-    books = db.relationship('Book', lazy='dynamic', backref='author')
+    books = db.relationship('Book', lazy='dynamic', backref='author', cascade='all,delete')
 
     @property
     def password(self):
@@ -76,7 +76,7 @@ class Book(db.Model):
     name = db.Column(db.String(), nullable=False)
     publish_date = db.Column(db.String, nullable=False)
     price = db.Column(db.Float, nullable=False)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     @classmethod
     def get_book_by_id(cls, book_id):
