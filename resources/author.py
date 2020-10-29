@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse, fields, marshal
 from utils.common import email
-from utils.user import role_required, USER_OUTPUT_FIELDS
+from utils.user import role_required, USER_OUTPUT_FIELDS, none_required_req_parser
 from models import User
 from flask_jwt_extended import fresh_jwt_required, jwt_optional, get_jwt_identity
 from utils.book import BOOK_OUTPUT_FIELDS
@@ -55,8 +55,25 @@ class Author(Resource):
         return marshal(user, output_fields)
 
 
-    def put(self, user_id):
-        pass
+    @fresh_jwt_required
+    def put(self):
+        req_parser = none_required_req_parser.parse_args()
+
+        user = User.get_user_by_id(get_jwt_identity())
+
+        if not user:
+            return {'message': 'user not found'}, 404
+
+        if not user.has_role('author'):
+            return {'message': 'this user is not an author'}, 400
+
+        user.first_name = req_parser.get('first_name', user.first_name)
+        user.last_name = req_parser.get('last_name', user.last_name)
+        user.email = req_parser.get('email', user.email)
+
+        user.save()
+        return marshal(user, USER_OUTPUT_FIELDS)
+
 
     def delete(self, user_id):
         pass
