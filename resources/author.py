@@ -2,7 +2,7 @@ from flask_restful import Resource, reqparse, fields, marshal
 from utils.common import email
 from utils.user import role_required, USER_OUTPUT_FIELDS, none_required_req_parser
 from models import User
-from flask_jwt_extended import fresh_jwt_required, jwt_optional, get_jwt_identity
+from flask_jwt_extended import fresh_jwt_required, jwt_optional, get_jwt_identity, get_jwt_claims
 from utils.book import BOOK_OUTPUT_FIELDS
 
 
@@ -75,5 +75,22 @@ class Author(Resource):
         return marshal(user, USER_OUTPUT_FIELDS)
 
 
+    @fresh_jwt_required
     def delete(self, user_id):
-        pass
+        user = User.get_user_by_id(user_id)
+
+        if not user:
+            return {'message': 'user not found'}, 404
+
+        current_user_roles = get_jwt_claims().get('role')
+
+        if 'admin' in current_user_roles:
+            user.delete()
+            return {'message': 'account successfully deleted'}, 204
+
+        if 'author' in current_user_roles:
+            if user.id == get_jwt_identity():
+                user.delete()
+                return {'message': 'account successfully deleted'}, 204
+
+        return {'message': 'you are not allowed to delete this account'}, 401
