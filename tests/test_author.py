@@ -118,3 +118,90 @@ class TestGrantingUserRoleToAuthor(BaseTestCase):
 
         self.assertEqual(400, response.status_code)
         self.assertTrue('this user is not an author' in data.get('message'))
+
+    def test_user_not_found_works_fine_in_delete_user(self):
+        response = self.login(self.regular_user_data)
+        header = self.get_authorization_header(response)
+
+        response = self.app.delete(
+            '/author/5',
+            headers=header
+        )
+
+        data = json.loads(response.data)
+
+        self.assertEqual(404, response.status_code)
+        self.assertTrue('user not found' in data.get('message'))
+
+    def test_admin_can_delete_authors(self):
+        response = self.login(self.admin_user_data)
+        header = self.get_authorization_header(response)
+
+        response = self.app.delete(
+            '/author/2/',
+            headers=header
+        )
+
+        self.assertEqual(204, response.status_code)
+
+    def test_an_author_cannot_delete_another_authors_account(self):
+        """
+        first of all i need to add Author role to regular user
+        and then i can check that i can i delete the other author's accout ot not
+        """
+        response = self.login(self.admin_user_data)
+        header = self.get_authorization_header(response)
+
+        # request to add Author role to regular user
+        response = self.app.post(
+            '/author',
+            data=json.dumps({'email': self.regular_user_data['email']}),
+            content_type='application/json',
+            headers=header
+        )
+
+        self.assertEqual(200, response.status_code)
+
+
+        # now we try to delete the other author's account
+        response = self.login(self.author_user_data)
+        header = self.get_authorization_header(response)
+
+        response = self.app.delete(
+            '/author/1',
+            headers=header
+        )
+
+        data = json.loads(response.data)
+
+        self.assertEqual(401, response.status_code)
+        self.assertTrue('you are not allowed to delete this account' in data.get('message'))
+
+
+    def test_a_regular_user_cannot_delete_other_account(self):
+        response = self.login(self.regular_user_data)
+        header = self.get_authorization_header(response)
+
+        response = self.app.delete(
+            '/author/2',
+            headers=header
+        )
+
+        data = json.loads(response.data)
+
+        self.assertEqual(401, response.status_code)
+        self.assertTrue('you are not allowed to delete this account' in data.get('message'))
+
+    def test_we_cannot_delete_a_none_author_account(self):
+        response = self.login(self.admin_user_data)
+        header = self.get_authorization_header(response)
+
+        response = self.app.delete(
+            '/author/1',
+            headers=header
+        )
+
+        data = json.loads(response.data)
+
+        self.assertEqual(400, response.status_code)
+        self.assertTrue('this user is not an author' in data.get('message'))
