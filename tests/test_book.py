@@ -126,6 +126,22 @@ class Book(BaseTestCase):
         self.assertTrue('you are not allowed to delete this book' in data.get('message'))
 
     def test_cannot_update_other_authors_books(self):
+        # first i add Author role to regular user
+        response = self.login(self.admin_user_data)
+        header = self.get_authorization_header(response)
+
+        # request to add Author role to regular user
+        response = self.app.post(
+            '/author',
+            data=json.dumps({'email': self.regular_user_data['email']}),
+            content_type='application/json',
+            headers=header
+        )
+
+        self.assertEqual(200, response.status_code)
+
+        # now i can check that another author can or cannot update
+        # other author's book
         response = self.login(self.regular_user_data)
         header = self.get_authorization_header(response)
 
