@@ -82,15 +82,18 @@ class Author(Resource):
         if not user:
             return {'message': 'user not found'}, 404
 
+        if not user.has_role('author'):
+            return {'message': 'this user is not an author'}, 400
+
         current_user_roles = get_jwt_claims().get('role')
 
         if 'admin' in current_user_roles:
             user.delete()
-            return {'message': 'account successfully deleted'}, 204
+            return None, 204
 
         if 'author' in current_user_roles:
             if user.id == get_jwt_identity():
                 user.delete()
-                return {'message': 'account successfully deleted'}, 204
+                return None, 204
 
         return {'message': 'you are not allowed to delete this account'}, 401
