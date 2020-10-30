@@ -2,7 +2,7 @@ from config import Testing
 import unittest2 as unittest
 from app import create_app
 from models import db
-from models import Role, UserRoles, User, Book, BlackList
+from models import Role, UserRoles, User, Book
 import json
 
 
