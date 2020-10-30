@@ -1,12 +1,13 @@
 from flask_restful import Resource, reqparse, marshal
-from models import User
+from models import User, BlackList
 from utils.common import email, string
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     fresh_jwt_required,
     get_jwt_identity,
-    jwt_required
+    jwt_required,
+    get_raw_jwt
 )
 from utils.user import USER_OUTPUT_FIELDS
 
@@ -119,3 +120,12 @@ class DeleteAccount(Resource):
 
         user.delete()
         return {'message': 'account successfully deleted'}, 202
+
+
+class Logout(Resource):
+    @jwt_required
+    def get(self):
+        token_id = get_raw_jwt()['jti']
+        blacklisted_token = BlackList(token_id=token_id)
+        blacklisted_token.save()
+        return {'message': 'successfully logged out'}, 200

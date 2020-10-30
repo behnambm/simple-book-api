@@ -4,7 +4,8 @@ from resources.user import (
     UserLogin,
     ChangePassword,
     UserInfo,
-    DeleteAccount
+    DeleteAccount,
+    Logout
 )
 from flask_jwt_extended import JWTManager
 from resources.author import Author
@@ -78,4 +79,10 @@ api.add_resource(
     '/book/<int:book_id>/',
     '/book',
     '/book/'
+)
+
+api.add_resource(
+    Logout,
+    '/logout',
+    '/logout/'
 )
