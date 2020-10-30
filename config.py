@@ -13,6 +13,7 @@ class Config:
         or
         'some secret key to make JWT more secure'
     )
+    JWT_BLACKLIST_ENABLED = True
 
 
 class Development(Config):

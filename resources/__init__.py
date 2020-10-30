@@ -8,7 +8,7 @@ from resources.user import (
 )
 from flask_jwt_extended import JWTManager
 from resources.author import Author
-from models import User
+from models import User, BlackList
 from resources.book import Book
 
 
@@ -23,6 +23,14 @@ def add_claims_to_access_token(identity):
         user_roles = [role.name for role in user.roles]
         return {'role': user_roles}
     return None
+
+
+@jwt_manager.token_in_blacklist_loader
+def check_if_token_is_in_blacklist(decoded_token):
+    if BlackList.find_by_token_id(decoded_token['jti']):
+        return True
+
+    return False
 
 
 # add all resources to application

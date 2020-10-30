@@ -89,3 +89,16 @@ class Book(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+
+class BlackList(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    token_id = db.Column(db.String)
+
+    @classmethod
+    def find_by_token_id(cls, token_id):
+        return cls.query.filter_by(token_id=token_id).first()
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
