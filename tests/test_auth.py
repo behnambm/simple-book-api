@@ -236,3 +236,35 @@ class TestUserDelete(BaseTestCase):
 
         self.assertEqual(404, response.status_code)
         self.assertTrue('user not found' in data['message'])
+
+
+class Logout(BaseTestCase):
+    def test_that_user_cannot_get_user_info_after_logout(self):
+        # at first we should make that user can get all data
+        # before logging out
+        response = self.login(self.admin_user_data)
+        header = self.get_authorization_header(response)
+
+        response = self.app.get(
+            '/user-info/',
+            headers=header
+        )
+
+        data = json.loads(response.data)
+
+        self.assertEqual(200, response.status_code)
+        self.assertTrue('hugo' in data['info'].get('first name'))
+
+        # now we log out
+        self.logout(header)
+
+        # second try to get user-info which have to FAIL
+        response = self.app.get(
+            '/user-info',
+            headers=header
+        )
+
+        data = json.loads(response.data)
+
+        self.assertEqual(401, response.status_code)
+        self.assertTrue('Token has been revoked' in data.get('msg'))

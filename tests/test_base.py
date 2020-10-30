@@ -2,7 +2,7 @@ from config import Testing
 import unittest2 as unittest
 from app import create_app
 from models import db
-from models import Role, UserRoles, User, Book
+from models import Role, UserRoles, User, Book, BlackList
 import json
 
 
@@ -111,6 +111,16 @@ class BaseTestCase(unittest.TestCase):
 
         return data['access_token']
 
+
+    def logout(self, header):
+        response = self.app.get(
+            '/logout',
+            headers=header
+        )
+        data = json.loads(response.data)
+
+        self.assertEqual(200, response.status_code)
+        self.assertTrue('successfully logged out' in data.get('message'))
 
     def tearDown(self):
         db.drop_all()
