@@ -1,0 +1,514 @@
+{
+	"info": {
+		"_postman_id": "fadadfab-d640-4517-be45-d80f98a4b5d5",
+		"name": "book-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "/login/",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a6bf9c68-590d-4b54-9e56-d885ee63fa4c",
+								"exec": [
+									"var access_token = pm.response.json().access_token;",
+									"",
+									"pm.environment.set(\"access_token\", access_token);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"john_smith@email.com\",\n    \"password\": \"123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "There are 3 users \n\n1- hugo_alfred@email.com  as admin \n\n2- john_smith@email.com   as author\n\n3- ben_blake@email.com    as user  `just a regular user`\n\npassword for all of them: 123"
+					},
+					"response": []
+				},
+				{
+					"name": "/register/",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"new_user\",\n    \"last_name\": \"new_user_lname\",\n    \"password\": \"123\",\n    \"email\": \"new_user@email.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/register/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"register",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/chagne-password/",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"12345\",\n    \"email\": \"hugo_alfred@email.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/change-password/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"change-password",
+								""
+							]
+						},
+						"description": "Change password, fresh toekn needed."
+					},
+					"response": []
+				},
+				{
+					"name": "/delete-account/",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/delete-account/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"delete-account",
+								""
+							]
+						},
+						"description": "To delete all data that belongs to this user.\nFresh token required."
+					},
+					"response": []
+				},
+				{
+					"name": "/user-info/",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/user-info/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user-info",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/logout/",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/logout/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"logout",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Book",
+			"item": [
+				{
+					"name": "/book/<int:ID>/",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/book/3",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"book",
+								"3"
+							]
+						},
+						"description": "If you are not a logged in user this endpoint will show less information about the book.\n\nif you get `Not enough segments` error you should remove the `Authorization` header."
+					},
+					"response": []
+				},
+				{
+					"name": "/book/",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Wonderland Edition 4\", \n    \"publish_date\": \"2020-02-16\",\n    \"price\": 9966\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/book/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"book",
+								""
+							]
+						},
+						"description": "Only users with `author` role can add new book."
+					},
+					"response": []
+				},
+				{
+					"name": "/book/<int:ID>/",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Wonderland Edition 4\",\n    \"publish_date\": \"2020-02-16\",\n    \"price\": 45\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/book/3",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"book",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/book/<int:ID>/",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/book/3",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"book",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Author",
+			"item": [
+				{
+					"name": "/author/<int:ID>/",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/author/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"author",
+								"2"
+							]
+						},
+						"description": "There are 3 books\nall of them are owned by `john_smith@email` with id number 2"
+					},
+					"response": []
+				},
+				{
+					"name": "/author/",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"ben_blake@email.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/author",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"author"
+							]
+						},
+						"description": "To be able to use this endpint you should log in as an **admin** user, like **hugo_alfred@email.com**.\n\n\nafter logging in you can give a user **Author** role.\n\nIn this case we have a regular user and we want to give it **Author** role."
+					},
+					"response": []
+				},
+				{
+					"name": "/author/",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"John H\",\n    \"last_name\": \"Smith\",\n    \"email\": \"john_smith@email.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/author/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"author",
+								""
+							]
+						},
+						"description": "Update author only by admin users.\nFresh token required."
+					},
+					"response": []
+				},
+				{
+					"name": "/author/<int:ID>/",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/author/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"author",
+								"2"
+							]
+						},
+						"description": "Admin privilege adn fresh token required."
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "182bad04-6ad1-4975-a279-e2dc2bd60a90",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "4471fb0f-c54a-421d-a6e2-de8459d50e33",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
