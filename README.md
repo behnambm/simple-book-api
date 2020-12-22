@@ -3,7 +3,7 @@
 
 In this applciation I've tried to implement CRUD operations with Python/Flask in form of a RestAPI.
 
-CI/CD: TravisCI, Heroku
+CI: TravisCI
 
 ## installation
 
