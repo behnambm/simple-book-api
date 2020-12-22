@@ -1,5 +1,10 @@
 
 [![Travis-CI](https://travis-ci.org/behnambm/simple-book-api.svg?branch=main)](https://travis-ci.org/behnambm/simple-book-api.svg?branch=main)
+
+In this applciation I've tried to implement CRUD operations with Python/Flask in form of a RestAPI.
+
+CI/CD: TravisCI, Heroku
+
 ## installation
 
 - `git clone https://github.com/behnambm/simple-book-api.git`
